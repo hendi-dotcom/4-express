@@ -32,7 +32,56 @@ app.post("/generate-text", async (req, res) => {
     }
 });
 
+app.post("/generate-image", upload.single("image"), async (req, res) => {
+  const { prompt } = req.body;
+  const image = req.file;
+  try { 
+    const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
+    const result = await model.generateContent(prompt, {
+      images: [image.buffer],
+    });
+    const response = result.response;
+    const imageData = response.images()[0]; 
+    res.json({ image: imageData });
+  } catch (error) {
+    console.error(error);   
+    res.status(500).json({ error: "Failed to generate image" });
+    } 
+});
 
+app.post("/generate-document", upload.single("document"), async (req, res) => {
+  const { prompt } = req.body;
+  const document = req.file;
+  try {
+    const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
+    const result = await model.generateContent(prompt, {
+      documents: [document.buffer],
+    });
+    const response = result.response;
+    const documentData = response.documents()[0]; 
+    res.json({ document: documentData });
+  } catch (error) {
+    console.error(error);   
+    res.status(500).json({ error: "Failed to generate document" });
+    } 
+});
 
+app.post("/generate-audio", upload.single("audio"), async (req, res) => {
+  const { prompt } = req.body;
+  const audio = req.file;
+  try { 
+    const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
+    const result = await model.generateContent(prompt, {  
+      audio: [audio.buffer],
+
+    });
+    const response = result.response;
+    const audioData = response.audio()[0]; 
+    res.json({ audio: audioData });
+  } catch (error) {
+    console.error(error);   
+    res.status(500).json({ error: "Failed to generate audio" });
+    } 
+});
 
  
